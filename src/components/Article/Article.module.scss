@@ -1,0 +1,71 @@
+@import '../../variables.scss';
+.aritcle {
+  display: flex;
+  margin: 0 auto;
+  margin-top: 26px;
+  flex-basis: 941px;
+  max-width: 941px;
+  background-color: $main-background-color;
+  padding: 15px 14px 24px 19px;
+  border-radius: 5px;
+}
+
+.content {
+  max-width: 682px;
+}
+
+.title {
+  font-size: 20px;
+  line-height: 28px;
+}
+.titleText {
+  color: $info-color;
+  margin-right: 13px;
+}
+
+.likeStatus {
+  margin-right: 5px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 4px 0px;
+  column-gap: 8px;
+  font-size: 12px;
+  line-height: 15px;
+  color: $secondary-text-color;
+  & button {
+    padding: 2px 6px 3px 5px;
+    border: 1px solid;
+    border-color: $secondary-text-color;
+    border-radius: 2px;
+  }
+}
+
+.articleText {
+  font-size: 12px;
+  line-height: 22px;
+}
+.articleInfo {
+  display: flex;
+  margin-left: auto;
+}
+.userIcon {
+  max-width: 46px;
+  max-height: 46px;
+  margin-left: 12px;
+}
+
+.userInfo {
+  & p:first-child {
+    color: $heading-color;
+    font-size: 18px;
+    line-height: 28px;
+  }
+  & p:last-child {
+    color: $secondary-text-color;
+    font-size: 12px;
+    line-height: 22px;
+  }
+}

@@ -1,0 +1,27 @@
+@import 'antd/dist/antd.css';
+
+@import 'variables.scss';
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+*,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  list-style-type: none;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+}
+
+#root {
+  background: $back-background-color;
+  font-family: 'Inter', sans-serif;
+  color: $main-text-color;
+  padding-bottom: 1px;
+  min-height: 100%;
+}
