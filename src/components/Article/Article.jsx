@@ -1,35 +1,49 @@
 import React from 'react'
-import classes from './Article.module.scss'
-import noLike from '../../assets/img/noLike.svg'
 import { Link } from 'react-router-dom'
 
-const Article = ({ info }) => {
+import noLike from '../../assets/img/noLike.svg'
+
+import classes from './Article.module.scss'
+
+const Article = ({ info, children }) => {
   return (
     <article className={classes.aritcle}>
-      <Content info={info} />
-      <UserInfo info={info} />
+      <div className={classes.articleHeader}>
+        <div>
+          <Title info={info} />
+          <Content info={info} />
+        </div>
+        <UserInfo info={info} />
+      </div>
+      {children}
     </article>
   )
 }
 
+const Title = ({ info }) => {
+  const { title, slug } = info
+  return (
+    <div className={classes.title}>
+      <Link className={classes.titleText} to={`/article/${slug}`}>
+        {title}
+      </Link>
+      <button>
+        <img src={noLike} alt="Like Status" className={classes.likeStatus} />
+      </button>
+      <span>12</span>
+    </div>
+  )
+}
+
 const Content = ({ info }) => {
-  const { body, title, tagList, slug } = info
+  const { description, tagList } = info
   return (
     <div className={classes.content}>
-      <div className={classes.title}>
-        <Link className={classes.titleText} to={slug}>
-          {title}
-        </Link>
-        <button>
-          <img src={noLike} alt="Like Status" className={classes.likeStatus} />
-        </button>
-        <span>12</span>
-      </div>
       <div className={classes.tags}>
         <Tags tagList={tagList} />
       </div>
       <div className={classes.articleText}>
-        <p>{body}</p>
+        <p>{description}</p>
       </div>
     </div>
   )
@@ -44,7 +58,7 @@ const UserInfo = ({ info }) => {
         <p>{username}</p>
         <p>{calculateDate(createdAt)}</p>
       </div>
-      <img src={image} alt="User icon" className={classes.userIcon} />
+      <img src={image} alt="Avatar image" className={classes.userIcon} />
     </div>
   )
 }
@@ -58,7 +72,18 @@ const calculateDate = (date) => {
 }
 
 const Tags = ({ tagList }) => {
-  if (tagList) return tagList.map((tag) => <button>{tag}</button>)
+  if (tagList) return tagList.map((tag, index) => <button key={index}>{tag}</button>)
+}
+
+Article.defaultProps = {
+  info: {
+    body: '',
+    title: '',
+    tagList: [],
+    slug: '',
+    createdAt: '',
+    author: { image: '', username: '' },
+  },
 }
 
 export default Article

@@ -1,10 +1,6 @@
 import ArticleList from '../components/ArticleList'
 
 const ArticleListPage = () => {
-  return (
-    <>
-      <ArticleList />
-    </>
-  )
+  return <ArticleList />
 }
 export default ArticleListPage

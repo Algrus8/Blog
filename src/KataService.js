@@ -4,20 +4,49 @@ export default class KataSercvice {
   }
 
   async getGlobalArticles(offset = 0) {
-    try {
-      const response = await fetch(`${this.rootURL}/articles?offset=${offset}&limit=5`)
-      return await response.json()
-    } catch (error) {
-      throw new Error(error.message)
-    }
+    const response = await fetch(`${this.rootURL}/articles?offset=${offset}&limit=5`)
+    if (!response.ok) throw new Error('Get articles error')
+    return await response.json()
   }
 
   async getArticle(slug) {
-    try {
-      const response = await fetch(`${this.rootURL}/articles/${slug}`)
-      return await response.json()
-    } catch (error) {
-      throw new Error(error.message)
-    }
+    const response = await fetch(`${this.rootURL}/articles/${slug}`)
+    if (!response.ok) throw new Error('Get article error')
+    return await response.json()
+  }
+
+  async registerNewUser(user) {
+    const response = await fetch(`${this.rootURL}/users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: user,
+    })
+    if (!response.ok && response.status !== 422) throw new Error('Register error')
+    return await response.json()
+  }
+
+  async userLogin(user) {
+    const response = await fetch(`${this.rootURL}/users/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        credentials: 'include',
+      },
+      body: user,
+    })
+    if (!response.ok && response.status !== 422) throw new Error('Login error')
+    return await response.json()
+  }
+
+  async getUser() {
+    const response = await fetch(`${this.rootURL}/user`, {
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    })
+    if (!response.ok) throw new Error('Get user error')
+    return await response.json()
   }
 }

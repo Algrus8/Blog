@@ -1,13 +1,19 @@
 @import '../../variables.scss';
 .aritcle {
-  display: flex;
-  margin: 0 auto;
-  margin-top: 26px;
-  flex-basis: 941px;
+  min-width: 65%;
   max-width: 941px;
   background-color: $main-background-color;
   padding: 15px 14px 24px 19px;
   border-radius: 5px;
+  margin-top: 26px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.articleHeader {
+  display: flex;
 }
 
 .content {
@@ -31,7 +37,7 @@
   display: flex;
   flex-wrap: wrap;
   margin: 4px 0px;
-  column-gap: 8px;
+  gap: 8px;
   font-size: 12px;
   line-height: 15px;
   color: $secondary-text-color;
