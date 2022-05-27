@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 const useRequest = (request) => {
   const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
   useEffect(() => {
@@ -12,6 +12,7 @@ const useRequest = (request) => {
       .catch((error) => setError(error))
       .finally(setLoading(false))
   }, [])
+
   return [data, loading, error]
 }
 export default useRequest

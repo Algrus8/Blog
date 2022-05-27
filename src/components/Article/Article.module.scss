@@ -10,6 +10,7 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  flex-basis: 140px;
 }
 
 .articleHeader {
@@ -52,15 +53,16 @@
 .articleText {
   font-size: 12px;
   line-height: 22px;
+  margin-top: 17px;
 }
 .articleInfo {
   display: flex;
-  margin-left: auto;
 }
 .userIcon {
   max-width: 46px;
   max-height: 46px;
   margin-left: 12px;
+  border-radius: 50%;
 }
 
 .userInfo {
@@ -74,4 +76,37 @@
     font-size: 12px;
     line-height: 22px;
   }
+}
+
+.userInfoContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.deleteButton {
+  font-size: 14px;
+  line-height: 22px;
+  padding: 6px 17px 5px;
+  color: $highlight-color;
+  border: 1px solid $highlight-color;
+  border-radius: 5px;
+}
+
+.editButton {
+  font-size: 14px;
+  line-height: 22px;
+  padding: 6px 19px 5px;
+  color: $success-color;
+  border: 1px solid $success-color;
+  border-radius: 5px;
+}
+
+.buttonsContainer {
+  margin-top: 30px;
+  display: flex;
+  gap: 12px;
+}
+
+.contentContainer {
+  flex-grow: 1;
 }

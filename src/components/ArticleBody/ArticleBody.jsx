@@ -1,5 +1,5 @@
 import React from 'react'
-import { withRouter, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { marked } from 'marked'
 import { Spin, Alert } from 'antd'
 
@@ -12,10 +12,7 @@ import classes from './ArticleBody.module.scss'
 const ArticleBody = () => {
   const { slug } = useParams()
   const kata = new KataSercvice()
-
-  const getFullArticle = () => {
-    return kata.getArticle(slug)
-  }
+  const getFullArticle = () => kata.getArticle(slug)
   const [data, loading, error] = useRequest(getFullArticle)
 
   if (loading) return <Spin tip="Loading..." />
@@ -29,4 +26,4 @@ const ArticleBody = () => {
   )
 }
 
-export default withRouter(ArticleBody)
+export default ArticleBody

@@ -30,9 +30,49 @@
     color: $success-color;
   }
 }
+.logout {
+  color: $heading-color;
+  border: 1px solid $heading-color;
+  font-size: 18px;
+  line-height: 28px;
+  border-radius: 5px;
+  margin-right: 22px;
+  margin-left: 27px;
+  padding: 6px 18px 10px;
+  &:hover {
+    color: $heading-color;
+  }
+}
+.createArticle {
+  color: $success-color;
+  border: 1px solid $success-color;
+  font-size: 14px;
+  line-height: 22px;
+  border-radius: 5px;
+  margin-right: 26px;
+  padding: 6px 10px 5px;
+  &:hover {
+    color: $success-color;
+  }
+}
 
+.username {
+  color: $heading-color;
+  font-size: 18px;
+  line-height: 28px;
+  font-size: 18px;
+  line-height: 28px;
+  color: $heading-color;
+  margin-right: 13px;
+}
 .main {
   margin-right: auto;
   margin-left: 22px;
   color: $heading-color;
+}
+
+.avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
 }

@@ -5,9 +5,20 @@ import { Provider } from 'react-redux'
 import './index.scss'
 import App from './components/App'
 import { store } from './redux'
-const root = ReactDOM.createRoot(document.getElementById('root'))
-root.render(
-  <Provider store={store}>
-    <App />
-  </Provider>
-)
+import { authorize } from './redux/userSlice'
+import KataSercvice from './KataService'
+;(async () => {
+  const kata = new KataSercvice()
+  const token = document.cookie.replace('token=', '')
+  const root = ReactDOM.createRoot(document.getElementById('root'))
+  if (token) {
+    const { user } = await kata.getUser(token)
+    store.dispatch(authorize(user))
+  }
+
+  root.render(
+    <Provider store={store}>
+      <App />
+    </Provider>
+  )
+})()

@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import React, { useState } from 'react'
-import { Spin } from 'antd'
-import { useDispatch } from 'react-redux'
+import { Alert, Spin } from 'antd'
+import { useDispatch, useSelector } from 'react-redux'
 
 import KataSercvice from '../../KataService'
 import { authorize } from '../../redux/userSlice'
@@ -10,81 +10,83 @@ import { authorize } from '../../redux/userSlice'
 import ErrorMessage from './ErrorMessage'
 import Input from './Input'
 import classes from './Identification.module.scss'
+import { emailOptions } from './useFormObjects'
+import SubmitButton from './SubmitButton'
 
 const SignIn = () => {
-  const kata = new KataSercvice()
+  const loggedIn = useSelector((state) => state.user.loggedIn)
   const [loading, setLoading] = useState(false)
-
   const [serverError, setServerError] = useState(false)
   const dispatch = useDispatch()
-
-  const { ['email or password']: emailOrPassword = null } = serverError
-  const ServerErrorMessage = serverError && emailOrPassword && (
-    <ErrorMessage message={`email or password ${emailOrPassword}`} />
-  )
+  const history = useHistory()
+  const kata = new KataSercvice()
 
   const {
     register,
     formState: { errors },
     handleSubmit,
-    // reset,
+    clearErrors,
+    setError,
+    setFocus,
   } = useForm({
     mode: 'onChange',
   })
 
   const onSubmit = async (data) => {
-    setLoading(true)
-    const { email, password } = data
-    const user = JSON.stringify({
-      user: { email, password },
-    })
-    const login = await kata.userLogin(user)
-    setLoading(false)
-    if (login.errors) {
-      setServerError(login.errors)
-      return
+    try {
+      setLoading(true)
+      const { email, password } = data
+      const user = {
+        user: { email, password },
+      }
+      const login = await kata.userLogin(user)
+      if (login.errors) {
+        setError('server', { type: 'custom', message: login.errors['email or password'] })
+        return
+      }
+      dispatch(authorize(login.user))
+      document.cookie = `token=${login.user.token}; path=/; max-age=86400`
+    } catch (error) {
+      setServerError(error.message)
+    } finally {
+      setLoading(false)
     }
-    setServerError(false)
-    dispatch(authorize(login.user))
-    document.cookie = `token=${login.user.token}; path=/; max-age=86400`
-    // reset()
   }
 
-  const email = register('email', {
-    required: 'Field is required',
-    pattern: {
-      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-      message: 'invalid email address',
-    },
-  })
-  const emailError = errors?.email && <ErrorMessage message={errors.email.message} />
-
+  const email = register('email', emailOptions)
   const password = register('password', {
     required: 'Field is required',
   })
+  const emailError = errors?.email && <ErrorMessage message={errors.email.message} />
   const passwordError = errors?.password && <ErrorMessage message={errors.password.message} />
+  const serverErrorMessage = errors?.server && <ErrorMessage message={`email or password ${errors.server.message}`} />
 
-  if (loading) {
-    return <Spin tip="Loading..." />
-  }
+  if (loading) return <Spin tip="Loading..." />
+  if (loggedIn) history.replace('/articles/1')
+  if (serverError) return <Alert message={`${serverError}`} type="error" />
 
   return (
-    <form className={classes.signUp} onSubmit={handleSubmit(onSubmit)}>
+    <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
       <div className={classes.title}>
         <span>Sign In</span>
       </div>
 
-      <Input type="email" {...email} onError={emailError}>
+      <Input
+        {...email}
+        onError={emailError}
+        onFocus={() => clearErrors('server')}
+        onKeyDown={({ key }) => {
+          if (key === 'Enter') setFocus('password')
+        }}
+      >
         Email address
       </Input>
-      <Input type="password" {...password} onError={passwordError}>
+      <Input type="password" {...password} onError={passwordError} onFocus={() => clearErrors('server')}>
         Password
       </Input>
-      {ServerErrorMessage}
+      {serverErrorMessage}
       <div>
-        <button type="submit" className={classes.submit} title="Login">
-          Login
-        </button>
+        <SubmitButton>Login</SubmitButton>
         <div className={classes.haveAcc}>
           <span>Don’t have an account? </span>
           <Link to="/sign-up/">Sign Up.</Link>

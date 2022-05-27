@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Pagination, Spin, Alert } from 'antd'
-import { withRouter, useHistory, useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 
 import KataSercvice from '../../KataService'
 import Article from '../Article/'
@@ -10,16 +10,17 @@ import classes from './ArticleList.module.scss'
 const ArticleList = () => {
   const { page } = useParams()
   const history = useHistory()
+  const kata = new KataSercvice()
 
   const [articles, setArticles] = useState([])
   const [articlesCount, setArticlesCount] = useState(0)
   const [error, setError] = useState(false)
   const [loading, setLoading] = useState(true)
 
-  const kata = new KataSercvice()
   useEffect(() => {
     const createArticles = async () => {
       try {
+        setLoading(true)
         const { articles, articlesCount } = await kata.getGlobalArticles(5 * page - 5)
         const newArticles = articles.map((article) => <Article info={article} key={article.slug} />)
         setArticles(newArticles)
@@ -33,13 +34,8 @@ const ArticleList = () => {
     createArticles()
   }, [page])
 
-  if (loading) {
-    return <Spin tip="Loading..." />
-  }
-
-  if (error) {
-    return <Alert message={error} type="error" />
-  }
+  if (loading) return <Spin tip="Loading..." />
+  if (error) return <Alert message={error} type="error" />
 
   return (
     <div>
@@ -56,4 +52,4 @@ const ArticleList = () => {
   )
 }
 
-export default withRouter(ArticleList)
+export default ArticleList

@@ -1,90 +1,60 @@
-import { Link, withRouter, useHistory } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import React, { useState } from 'react'
-import { Spin } from 'antd'
+import { Alert, Spin } from 'antd'
 
 import KataSercvice from '../../KataService'
 
 import Input from './Input'
 import ErrorMessage from './ErrorMessage'
 import classes from './Identification.module.scss'
-
+import { usernameOptions, emailOptions, passwordOptions, agreementOptions } from './useFormObjects'
+import SubmitButton from './SubmitButton'
 const SignUp = () => {
   const kata = new KataSercvice()
-  const [serverError, setServerError] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { email: emailServerError = null, username: userNameServerError = null } = serverError
+  const [serverError, setServerError] = useState(false)
   const history = useHistory()
-
-  const emailServerErrorMessage = serverError && emailServerError && (
-    <ErrorMessage message={`email ${emailServerError}`} />
-  )
-  const userNameServerErrorMessage = serverError && userNameServerError && (
-    <ErrorMessage message={`username ${userNameServerError}`} />
-  )
 
   const {
     register,
     formState: { errors, isValid },
     handleSubmit,
-    // reset,
     watch,
+    clearErrors,
+    setError,
+    setFocus,
+    setValue,
+    getValues,
   } = useForm({
     mode: 'onChange',
   })
 
   const onSubmit = async (data) => {
-    setLoading(true)
-    const { username, email, password } = data
-    const user = JSON.stringify({
-      user: { username, email, password },
-    })
-    const result = await kata.registerNewUser(user)
-    setLoading(false)
-    if (result.errors) {
-      setServerError(result.errors)
-      return
+    try {
+      setLoading(true)
+      const { username, email, password } = data
+      const user = {
+        user: { username, email, password },
+      }
+      const { errors } = await kata.registerNewUser(user)
+      if (errors) {
+        errors.email && setError('emailServer', { type: 'custom', message: errors.email })
+        errors.username && setError('userNameServer', { type: 'custom', message: errors.username })
+        return
+      }
+      history.push('/sign-in')
+    } catch (error) {
+      setServerError(error.message)
+    } finally {
+      setLoading(false)
     }
-    setServerError(false)
-    history.push('/sign-in')
-    // reset()
   }
 
-  const userName = register('username', {
-    required: 'Field is required',
-    minLength: {
-      value: 3,
-      message: 'Your username needs to be at least 3 characters.',
-    },
-    maxLength: {
-      value: 20,
-      message: 'Your username needs to be no more than 40 characters',
-    },
-  })
-  const userNameError = errors?.username && <ErrorMessage message={errors.username.message} />
-
-  const email = register('email', {
-    required: 'Field is required',
-    pattern: {
-      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-      message: 'invalid email address',
-    },
-  })
-  const emailError = errors?.email && <ErrorMessage message={errors.email.message} />
-
-  const password = register('password', {
-    required: 'Field is required',
-    minLength: {
-      value: 6,
-      message: 'Your password needs to be at least 6 characters.',
-    },
-    maxLength: {
-      value: 40,
-      message: 'Your password needs to be no more than 40 characters',
-    },
-  })
-  const passwordError = errors?.password && <ErrorMessage message={errors.password.message} />
-
+  const userName = register('username', usernameOptions)
+  const email = register('email', emailOptions)
+  const password = register('password', passwordOptions)
+  const agreement = register('agreement', agreementOptions)
   const repeatPassowrd = register('confirmPassword', {
     required: 'Field is required',
     validate: (value) => {
@@ -94,47 +64,87 @@ const SignUp = () => {
     },
   })
   const repeatPassowrdError = errors?.confirmPassword && <ErrorMessage message={errors.confirmPassword.message} />
-
-  const agreement = register('agreement', {
-    required: 'You need to accept the agreement',
-  })
   const agreementError = errors?.agreement && <ErrorMessage message={errors.agreement.message} />
+  const userNameError = errors?.username && <ErrorMessage message={errors.username.message} />
+  const emailError = errors?.email && <ErrorMessage message={errors.email.message} />
+  const passwordError = errors?.password && <ErrorMessage message={errors.password.message} />
+  const emailServerError = errors?.emailServer && <ErrorMessage message={`email ${errors.emailServer.message}`} />
+  const userNameServerError = errors?.userNameServer && (
+    <ErrorMessage message={`username ${errors.userNameServer.message}`} />
+  )
 
-  if (loading) {
-    return <Spin tip="Loading..." />
-  }
+  if (loading) return <Spin tip="Loading..." />
+  if (serverError) return <Alert message={`${serverError}`} type="error" />
 
   return (
-    <form className={classes.signUp} onSubmit={handleSubmit(onSubmit)}>
+    <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
       <div className={classes.title}>
         <span>Create new account</span>
       </div>
-      <Input {...userName} onError={userNameError} serverError={userNameServerErrorMessage}>
+      <Input
+        {...userName}
+        onError={userNameError || userNameServerError}
+        onFocus={() => clearErrors('userNameServer')}
+        onKeyDown={({ key }) => {
+          if (key === 'Enter') setFocus('email')
+        }}
+      >
         Username
       </Input>
-      <Input type="email" {...email} onError={emailError} serverError={emailServerErrorMessage}>
+      <Input
+        type="email"
+        {...email}
+        onError={emailError || emailServerError}
+        onFocus={() => clearErrors('emailServer')}
+        onKeyDown={({ key }) => {
+          if (key === 'Enter') setFocus('password')
+        }}
+      >
         Email address
       </Input>
-      <Input type="password" {...password} onError={passwordError}>
+      <Input
+        type="password"
+        {...password}
+        onError={passwordError}
+        onKeyDown={({ key }) => {
+          if (key === 'Enter') setFocus('confirmPassword')
+        }}
+      >
         Password
       </Input>
-      <Input type="password" placeholder="Password" {...repeatPassowrd} onError={repeatPassowrdError}>
+      <Input
+        type="password"
+        placeholder="Password"
+        {...repeatPassowrd}
+        onError={repeatPassowrdError}
+        onKeyDown={({ key }) => {
+          if (key === 'Enter') setFocus('agreement')
+        }}
+      >
         Repeat Password
       </Input>
       <label className={classes.agreement}>
-        <input type="checkbox" {...agreement} />I agree to the processing of my personal information
+        <input
+          type="checkbox"
+          {...agreement}
+          onKeyDown={(event) => {
+            const currentValue = getValues('agreement')
+            if (currentValue && event.key === 'Enter') return
+            if (event.key === 'Enter') {
+              event.preventDefault()
+              setValue('agreement', !currentValue, { shouldValidate: true })
+            }
+          }}
+        />
+        I agree to the processing of my personal information
       </label>
       {agreementError}
 
       <div>
-        <button
-          type="submit"
-          className={classes.submit}
-          disabled={!isValid}
-          title={isValid ? 'Create account' : 'You must complete the form'}
-        >
+        <SubmitButton title={isValid ? 'Create account' : 'You need to complete the form'} disabled={!isValid}>
           Create
-        </button>
+        </SubmitButton>
+
         <div className={classes.haveAcc}>
           <span>Already have an account? </span>
           <Link to="/sign-in/">Sign In</Link>
@@ -144,4 +154,4 @@ const SignUp = () => {
   )
 }
 
-export default withRouter(SignUp)
+export default SignUp
