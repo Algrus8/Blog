@@ -31,11 +31,11 @@ const UserArticle = () => {
   const match = useRouteMatch()
   const isEditing = match.path === '/article/:slug/edit'
   const [error, setError] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
   const {
     register,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
     reset,
     setFocus,
@@ -55,6 +55,7 @@ const UserArticle = () => {
   const textareaClass = classNames([classes.textarea], { [classes.errorTextarea]: textError })
 
   const onSubmit = (data) => {
+    setLoading(true)
     const tagList = tags.map((tag) => tag.value).filter((tag) => tag.length !== 0)
     const { title, text, description } = data
     const article = {
@@ -68,16 +69,22 @@ const UserArticle = () => {
     if (isEditing)
       kata
         .updateArticle(article, slug)
-        .then(() => history.replace(`/article/${slug}`))
+        .then(() => {
+          history.replace(`/article/${slug}`)
+        })
         .catch((error) => setError(error.message))
+        .finally(() => setLoading(false))
     if (!isEditing) {
       kata
         .createArticle(article)
-        .then(() => {
+        .then(({ article }) => {
           reset()
           dispatch(toInitial())
+          setLoading(false)
+          history.replace(`/article/${article.slug}`)
         })
         .catch((error) => setError(error.message))
+        .finally(() => setLoading(false))
     }
   }
   useEffect(() => {
@@ -151,7 +158,7 @@ const UserArticle = () => {
         Tags
         <TagList />
       </label>
-      <SubmitButton>Send</SubmitButton>
+      <SubmitButton disabled={!isValid}>Send</SubmitButton>
     </form>
   )
 }

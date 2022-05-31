@@ -42,17 +42,6 @@ export const agreementOptions = {
   required: 'You need to accept the agreement',
 }
 
-export const editUsernameOptions = {
-  minLength: {
-    value: 3,
-    message: 'Your username needs to be at least 3 characters.',
-  },
-  maxLength: {
-    value: 20,
-    message: 'Your username needs to be no more than 40 characters',
-  },
-}
-
 export const editEmailOptions = {
   pattern: {
     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
@@ -70,3 +59,14 @@ export const editPasswordOptions = {
     message: 'Your password needs to be no more than 40 characters',
   },
 }
+
+// export const editUsernameOptions = {
+//   minLength: {
+//     value: 3,
+//     message: 'Your username needs to be at least 3 characters.',
+//   },
+//   maxLength: {
+//     value: 20,
+//     message: 'Your username needs to be no more than 40 characters',
+//   },
+// }

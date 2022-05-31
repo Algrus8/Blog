@@ -37,6 +37,15 @@ p {
   flex-direction: column;
 }
 
-.ant-spin {
-  margin: auto !important;
+.ant {
+  &-spin {
+    margin: auto;
+  }
+  &-alert-error {
+    flex-grow: 1;
+    font-size: 32px;
+  }
+  &-alert-content {
+    text-align: center;
+  }
 }
