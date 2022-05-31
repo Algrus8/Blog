@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 const useRequest = (request) => {
   const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
 
   useEffect(() => {
@@ -10,7 +10,7 @@ const useRequest = (request) => {
     request()
       .then((response) => setData(response))
       .catch((error) => setError(error))
-      .finally(setLoading(false))
+      .finally(() => setLoading(false))
   }, [])
 
   return [data, loading, error]

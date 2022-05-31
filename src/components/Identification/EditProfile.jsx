@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Alert, Spin } from 'antd'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import KataSercvice from '../../KataService'
 import { authorize } from '../../redux/userSlice'
@@ -9,19 +9,21 @@ import { authorize } from '../../redux/userSlice'
 import Input from './Input'
 import ErrorMessage from './ErrorMessage'
 import classes from './Identification.module.scss'
-import { editUsernameOptions, editEmailOptions, editPasswordOptions, urlOptions } from './useFormObjects'
+import { usernameOptions, editEmailOptions, editPasswordOptions, urlOptions } from './useFormObjects'
 import SubmitButton from './SubmitButton'
+import { Redirect } from 'react-router-dom'
 
 const EditProfile = () => {
   const kata = new KataSercvice()
   const [loading, setLoading] = useState(false)
   const [serverError, setServerError] = useState(false)
+  const loggedIn = useSelector((state) => state.user.loggedIn)
 
   const dispatch = useDispatch()
 
   const {
     register,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
     clearErrors,
     setError,
@@ -41,7 +43,6 @@ const EditProfile = () => {
       if (avatar) user.user.image = avatar
       const response = await kata.userUpdate(user)
       if (response.errors) {
-        console.log(response)
         response.errors.email && setError('emailServer', { type: 'custom', message: response.errors.email })
         response.errors.username && setError('userNameServer', { type: 'custom', message: response.errors.username })
         return
@@ -55,7 +56,7 @@ const EditProfile = () => {
     }
   }
 
-  const userName = register('username', editUsernameOptions)
+  const userName = register('username', usernameOptions)
   const email = register('email', editEmailOptions)
   const password = register('password', editPasswordOptions)
   const avatar = register('avatar', urlOptions)
@@ -71,6 +72,7 @@ const EditProfile = () => {
     <ErrorMessage message={`username ${errors.userNameServer.message}`} />
   )
 
+  if (!loggedIn) return <Redirect to="/sign-in" />
   if (loading) return <Spin tip="Loading..." />
   if (serverError) return <Alert message={`${serverError}`} type="error" />
 
@@ -101,7 +103,7 @@ const EditProfile = () => {
         Avatar image (url)
       </Input>
       <div>
-        <SubmitButton>Save</SubmitButton>
+        <SubmitButton disabled={!isValid} title={isValid?"Save": 'Username field is required'}>Save</SubmitButton>
       </div>
     </form>
   )

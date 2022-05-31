@@ -17,7 +17,13 @@ export default class KataSercvice {
   }
 
   async getArticle(slug) {
-    const response = await fetch(`${this.rootURL}/articles/${slug}`)
+    const response = await fetch(`${this.rootURL}/articles/${slug}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: `Bearer ${this.token}`,
+      },
+    })
     if (!response.ok) throw new Error('Get article error')
     return await response.json()
   }
